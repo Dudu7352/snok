@@ -2,8 +2,11 @@ use std::{thread, time::Duration};
 use terminal_size::{terminal_size, Height, Width};
 use std::f64::consts::PI;
 
+mod config;
+
 const DURATION: Duration = Duration::from_millis(5);
 const WORD: &'static str = "Snake";
+const ERROR_MSG: &'static str = "Oopsie doopsie something went wrongie!";
 
 fn generate_line(n: usize) -> String {
     let mut buf = String::with_capacity(n + WORD.len());
@@ -14,10 +17,15 @@ fn generate_line(n: usize) -> String {
     buf
 }
 
-fn pregenerate_pattern(/*todo: configuration struct*/) -> Vec<String> {
+fn pregenerate_pattern(conf: config::Config) -> Vec<String> {
     let mut cycle: f64 = 0.0;
-    let (Width(term_width), Height(_)) = terminal_size().expect("Oopsie doopsie something went wrongie!");
-    let width = term_width as f64 - WORD.len() as f64;
+    let width = match conf.width {
+        config::SizeConfig::Percent(p) => {
+            let (Width(term_width), Height(_)) = terminal_size().expect(ERROR_MSG);
+            term_width as f64 * p/100.0 - WORD.len() as f64
+        },
+        config::SizeConfig::Chars(n) => (n as usize - WORD.len()) as f64,
+    };
     let step = PI / width as f64;
     let mut pat = Vec::<String>::new();
     while cycle < PI * 2.0 {
@@ -29,9 +37,10 @@ fn pregenerate_pattern(/*todo: configuration struct*/) -> Vec<String> {
 }
 
 fn main() {
-    let mut i = 0;
-    let pat = pregenerate_pattern();
+    let conf = config::read_config("snok.pson".to_string()).expect(ERROR_MSG);
+    let pat = pregenerate_pattern(conf);
     let pat_len = pat.len();
+    let mut i = 0;
     loop{
         println!("{}", pat[i]);
         thread::sleep(DURATION);

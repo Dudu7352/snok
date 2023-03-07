@@ -3,8 +3,6 @@ name = "snok"
 version = "0.1.0"
 edition = "2021"
 
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 terminal_size = "0.2.5"
+pson = {git="https://github.com/lechos22/pson_rs"}
