@@ -18,7 +18,7 @@ impl Default for Config {
 }
 
 pub fn read_config(path: String) -> Option<Config>{
-    let content = std::fs::read_to_string(path).ok()?;
+    let content = std::fs::read_to_string(path).unwrap_or("()");
     let mut parser = pson::PsonParser::new(content.chars());
     parser.parse().unwrap();
     let config_map = parser
