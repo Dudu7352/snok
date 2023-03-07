@@ -1,8 +1,8 @@
 use std::{iter, thread, time::Duration};
 use terminal_size::{terminal_size, Height, Width};
+use std::f64::consts::PI;
 
 const DURATION: Duration = Duration::from_millis(5);
-const PI: f64 = 3.1416;
 const WORD: &'static str = "Snake";
 
 fn main() {
